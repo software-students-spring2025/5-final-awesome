@@ -15,9 +15,7 @@ jobs:
         run: |
           cd web-app
           python -m pip install --upgrade pip
-          python -m pip install pipenv
-          pipenv sync --dev --python $(which python)
-          pipenv shell --fancy --python $(which python)
+          python -m pip install -r requirements.txt
       - name: Format with black
         if: hashFiles(format('{0}/**/*.py', web-app)) != ''
         # you may set black to ignore any files or dependencies that make no sense to format
