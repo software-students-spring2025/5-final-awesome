@@ -1,0 +1,23 @@
+version: '3.10'
+services:
+  web-app:
+    image: yd2960/project-5-team-awesome
+    # build: ./web-app
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+    
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    attach: false # disable logging
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
