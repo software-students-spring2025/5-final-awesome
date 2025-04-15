@@ -11,13 +11,13 @@ jobs:
         with:
           python-version: "3.10" # update version(s) as needed
       - name: Install dependencies
-        if: hashFiles(format('{0}/**/*.py', web-app)) != ''
+        if: hashFiles(format('{0}/**/*.py', 'web-app')) != ''
         run: |
           cd web-app
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
       - name: Format with black
-        if: hashFiles(format('{0}/**/*.py', web-app)) != ''
+        if: hashFiles(format('{0}/**/*.py', 'web-app')) != ''
         # you may set black to ignore any files or dependencies that make no sense to format
         run: |
           cd web-app
