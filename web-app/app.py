@@ -7,9 +7,11 @@ app.secret_key = "your_secret_key_here"
 client = MongoClient("mongodb://mongodb:27017/")
 database = client["awesome"]
 
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
 
 @app.route("/database_test", methods=["GET"])
 def database_test():
