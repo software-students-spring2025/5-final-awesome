@@ -1,0 +1,26 @@
+name: Format check
+on: [push, pull_request]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10" # update version(s) as needed
+      - name: Install dependencies
+        if: hashFiles(format('{0}/**/*.py', web-app)) != ''
+        run: |
+          cd web-app
+          python -m pip install --upgrade pip
+          python -m pip install pipenv
+          pipenv sync --dev --python $(which python)
+          pipenv shell --fancy --python $(which python)
+      - name: Format with black
+        if: hashFiles(format('{0}/**/*.py', web-app)) != ''
+        # you may set black to ignore any files or dependencies that make no sense to format
+        run: |
+          cd web-app
+          pipenv run black --diff --check .
