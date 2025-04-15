@@ -1,7 +1,8 @@
 version: '3.10'
 services:
   web-app:
-    build: ./web-app
+    image: yd2960/project-5-team-awesome
+    # build: ./web-app
     ports:
       - "8000:8000"
     networks:

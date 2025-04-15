@@ -1,13 +1,12 @@
 name: Deployment
 
-# on:
-#   push:
-#     branches: [main, master]
-#   pull_request:
-#     types: [opened, closed]
-#     branches: [main, master]
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    types: [opened, closed]
+    branches: [main, master]
 
-on: [push, pull_request]
 
 jobs:
   deployment:
