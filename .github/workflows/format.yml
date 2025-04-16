@@ -22,7 +22,8 @@ jobs:
         # you may set black to ignore any files or dependencies that make no sense to format
         run: |
           cd web-app
-          python -m black --diff --check 
+          python -m black --diff --check .
+
       - name: Run tests with pytest and coverage
         if: hashFiles(format('{0}/**/*.py', 'web-app')) != ''
         run: |
