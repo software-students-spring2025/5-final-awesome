@@ -1,4 +1,4 @@
-name: Format check
+name: Format and Test Check
 on: [push, pull_request]
 
 jobs:
@@ -22,3 +22,8 @@ jobs:
         run: |
           cd web-app
           python -m black --diff --check .
+      - name: Run tests with pytest and coverage
+        if: hashFiles(format('{0}/**/*.py', 'web-app')) != ''
+        run: |
+          cd web-app
+          pytest --cov=app --cov-report=term-missing --cov-fail-under=80
