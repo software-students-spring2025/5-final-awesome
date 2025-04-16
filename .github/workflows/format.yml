@@ -16,12 +16,13 @@ jobs:
           cd web-app
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
+          python -m pip install pytest pytest-cov black
       - name: Format with black
         if: hashFiles(format('{0}/**/*.py', 'web-app')) != ''
         # you may set black to ignore any files or dependencies that make no sense to format
         run: |
           cd web-app
-          python -m pip install pytest pytest-cov black
+          python -m black --diff --check 
       - name: Run tests with pytest and coverage
         if: hashFiles(format('{0}/**/*.py', 'web-app')) != ''
         run: |
