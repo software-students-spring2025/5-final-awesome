@@ -23,11 +23,16 @@ def create_poll():
         options = request.form.getlist("options")
         poll_id = request.form.get("poll_id")
 
-
-         # Check for duplicate ID
+        # Check for duplicate ID
         if database["polls"].find_one({"_id": poll_id}):
             # Re-render the form with an error message
-            return render_template("create.html", error="Poll ID already exists. Please use a different one."), 400
+            return (
+                render_template(
+                    "create.html",
+                    error="Poll ID already exists. Please use a different one.",
+                ),
+                400,
+            )
         poll = {
             "_id": poll_id,
             "question": question,
