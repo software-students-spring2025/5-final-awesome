@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson import ObjectId
 from datetime import datetime
+import random
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
@@ -21,18 +22,12 @@ def create_poll():
     if request.method == "POST":
         question = request.form.get("question")
         options = request.form.getlist("options")
-        poll_id = request.form.get("poll_id")
 
-        # Check for duplicate ID
-        if database["polls"].find_one({"_id": poll_id}):
-            # Re-render the form with an error message
-            return (
-                render_template(
-                    "create.html",
-                    error="Poll ID already exists. Please use a different one.",
-                ),
-                400,
-            )
+        while True:
+            poll_id = str(random.randint(100000, 999999))
+            if not database["polls"].find_one({"_id": poll_id}):
+                break
+
         poll = {
             "_id": poll_id,
             "question": question,
