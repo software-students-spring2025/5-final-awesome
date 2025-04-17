@@ -15,36 +15,26 @@ def test_index_route(mock_render, client):
     mock_render.assert_called_with("index.html")
 
 
+@patch("app.random.randint")
 @patch("app.render_template")
 @patch("app.database")
-def test_create_poll(mock_db, mock_render, client):
+def test_create_poll(mock_db, mock_render, mock_randint, client):
     # 1. GET request should render create.html
     response = client.get("/create")
     assert response.status_code == 200
     mock_render.assert_called_with("create.html")
 
-    # 2. POST request with unique ID should insert and redirect
+    # 2. POST request: mock poll_id = 123456
     mock_db["polls"].find_one.return_value = None
+    mock_randint.return_value = 123456  # control randomness
     response = client.post(
         "/create",
-        data={"question": "Test?", "options": ["A", "B"], "poll_id": "new123"},
+        data={"question": "Test?", "options": ["A", "B"]},
         follow_redirects=False,
     )
     mock_db["polls"].insert_one.assert_called_once()
     assert response.status_code == 302
-    assert "/poll/new123" in response.headers["Location"]
-
-    # 3. POST request with duplicate ID should re-render with error
-    mock_db["polls"].find_one.return_value = {"_id": "new123"}
-    mock_db["polls"].insert_one.reset_mock()
-    response = client.post(
-        "/create", data={"question": "Dup?", "options": ["X", "Y"], "poll_id": "new123"}
-    )
-    mock_db["polls"].insert_one.assert_not_called()
-    mock_render.assert_called_with(
-        "create.html", error="Poll ID already exists. Please use a different one."
-    )
-    assert response.status_code == 400
+    assert "/poll/123456" in response.headers["Location"]
 
 
 @patch("app.render_template")
