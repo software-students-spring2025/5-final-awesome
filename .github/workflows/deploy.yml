@@ -2,7 +2,7 @@ name: Deployment
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, Johnny]
   pull_request:
     types: [opened, closed]
     branches: [main, master]
