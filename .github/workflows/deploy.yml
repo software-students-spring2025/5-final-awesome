@@ -31,8 +31,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./web-app/
-          dockerfile: production-dockerfile
+          build:
+            context: ./web-app
+            dockerfile: production-dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
