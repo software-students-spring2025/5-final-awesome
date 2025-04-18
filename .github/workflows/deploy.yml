@@ -35,5 +35,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:latest
 

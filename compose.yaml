@@ -1,7 +1,8 @@
 version: '3.10'
 services:
+  pull_policy: always
   web-app:
-    image: yd2960/project-5-team-awesome
+    image: yd2960/project-5-team-awesome:latest
     # build: ./web-app
     ports:
       - "8000:8000"
