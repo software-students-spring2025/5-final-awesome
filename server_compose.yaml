@@ -1,9 +1,8 @@
 version: '3.10'
 services:
   web-app:
-    build:
-      context: ./web-app
-      dockerfile: development-dockerfile
+    image: yd2960/project-5-team-awesome
+    pull_policy: always 
     ports:
       - "8000:8000"
     networks:

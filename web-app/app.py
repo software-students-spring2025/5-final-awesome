@@ -4,9 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from bson import ObjectId
 from datetime import datetime
 import random
+import os
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key_here"
+app.secret_key = os.urandom(24)
 # Connection string mongodb://localhost:27017/
 client = MongoClient("mongodb://mongodb:27017/")
 database = client["awesome"]
