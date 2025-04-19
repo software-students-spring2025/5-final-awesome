@@ -41,7 +41,9 @@ jobs:
           file: ./web-app/production-dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:latest
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.1
@@ -61,7 +63,6 @@ jobs:
         run: |
           ssh -p ${SSH_PORT:-22} $SSH_USER@$SSH_HOST << 'EOF'
             cd 5-final-awesome
-            docker compose stop
-            docker compose up --pull always
+            docker compose restart
           EOF
 
