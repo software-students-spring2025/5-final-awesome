@@ -1,6 +1,12 @@
 name: Deployment
 
 on:
+  workflow_run:
+    workflows:
+      - log github events
+      - Format and Test Check
+    types:
+      - completed
   push:
     branches: [main, master, Johnny]
   pull_request:
