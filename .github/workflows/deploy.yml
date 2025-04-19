@@ -41,9 +41,7 @@ jobs:
           file: ./web-app/production-dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:latest
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.1
