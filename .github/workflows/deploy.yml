@@ -40,11 +40,10 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:latest
 
       - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.8.1
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 4) Run commands on the remote server
       - name: Deploy to remote server
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
