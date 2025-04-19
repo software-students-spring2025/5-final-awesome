@@ -45,12 +45,14 @@ def create_poll():
 
     return render_template("create.html")
 
+
 @app.route("/created/<poll_id>", methods=["GET"])
 def poll_created(poll_id):
     poll = database["polls"].find_one({"_id": poll_id})
     if not poll:
         return "Poll not found", 404
     return render_template("created.html", poll=poll)
+
 
 @app.route("/created/<poll_id>/edit", methods=["GET", "POST"])
 def edit_poll(poll_id):
@@ -78,6 +80,7 @@ def edit_poll(poll_id):
 
     return render_template("edit.html", poll=poll)
 
+
 @app.route("/poll/<poll_id>", methods=["GET", "POST"])
 def view_poll(poll_id):
     poll = database["polls"].find_one({"_id": poll_id})
@@ -99,12 +102,14 @@ def view_poll(poll_id):
 
     return render_template("poll.html", poll=poll)
 
+
 @app.route("/poll/<poll_id>/results", methods=["GET"])
 def poll_results(poll_id):
     poll = database["polls"].find_one({"_id": poll_id})
     if not poll:
         return "Poll not found", 404
     return render_template("results.html", poll=poll)
+
 
 @app.route("/database_test", methods=["GET"])
 def database_test():
