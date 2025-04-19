@@ -24,6 +24,10 @@ def create_poll():
         question = request.form.get("question")
         options = request.form.getlist("options")
 
+        # Basic validation
+        if not question or not options or len(options) < 1 or len(options) > 4:
+            return "Please enter a question and between 1 to 4 options.", 400
+
         while True:
             poll_id = str(random.randint(100000, 999999))
             if not database["polls"].find_one({"_id": poll_id}):
@@ -37,33 +41,20 @@ def create_poll():
         }
 
         database["polls"].insert_one(poll)
-        return redirect(url_for("view_poll", poll_id=poll_id))
+        return redirect(url_for("poll_created", poll_id=poll_id))
 
     return render_template("create.html")
 
 
-@app.route("/poll/<poll_id>", methods=["GET", "POST"])
-def view_poll(poll_id):
+@app.route("/created/<poll_id>", methods=["GET"])
+def poll_created(poll_id):
     poll = database["polls"].find_one({"_id": poll_id})
     if not poll:
         return "Poll not found", 404
-
-    if request.method == "POST":
-        option_index = int(request.form.get("option"))
-        if 0 <= option_index < len(poll["options"]):
-            database["polls"].update_one(
-                {
-                    "_id": poll_id,
-                    "options." + str(option_index) + ".votes": {"$exists": True},
-                },
-                {"$inc": {"options." + str(option_index) + ".votes": 1}},
-            )
-            return redirect(url_for("view_poll", poll_id=poll_id))
-
-    return render_template("poll.html", poll=poll)
+    return render_template("created.html", poll=poll)
 
 
-@app.route("/poll/<poll_id>/edit", methods=["GET", "POST"])
+@app.route("/created/<poll_id>/edit", methods=["GET", "POST"])
 def edit_poll(poll_id):
     poll = database["polls"].find_one({"_id": poll_id})
     if not poll:
@@ -73,8 +64,8 @@ def edit_poll(poll_id):
         question = request.form.get("question")
         options = request.form.getlist("options")
 
-        if not question or not options:
-            return "Missing question or options", 400
+        if not question or not options or len(options) < 1 or len(options) > 4:
+            return "Please enter a valid question and 1-4 options", 400
 
         database["polls"].update_one(
             {"_id": poll_id},
@@ -85,9 +76,39 @@ def edit_poll(poll_id):
                 }
             },
         )
-        return redirect(url_for("view_poll", poll_id=poll_id))
+        return redirect(url_for("poll_created", poll_id=poll_id))
 
     return render_template("edit.html", poll=poll)
+
+
+@app.route("/poll/<poll_id>", methods=["GET", "POST"])
+def view_poll(poll_id):
+    poll = database["polls"].find_one({"_id": poll_id})
+    if not poll:
+        return "Poll not found", 404
+
+    if request.method == "POST":
+        try:
+            option_index = int(request.form.get("option"))
+            if 0 <= option_index < len(poll["options"]):
+                database["polls"].update_one(
+                    {"_id": poll_id},
+                    {"$inc": {f"options.{option_index}.votes": 1}},
+                )
+        except (ValueError, TypeError):
+            return "Invalid vote", 400
+
+        return redirect(url_for("poll_results", poll_id=poll_id))
+
+    return render_template("poll.html", poll=poll)
+
+
+@app.route("/poll/<poll_id>/results", methods=["GET"])
+def poll_results(poll_id):
+    poll = database["polls"].find_one({"_id": poll_id})
+    if not poll:
+        return "Poll not found", 404
+    return render_template("results.html", poll=poll)
 
 
 @app.route("/database_test", methods=["GET"])

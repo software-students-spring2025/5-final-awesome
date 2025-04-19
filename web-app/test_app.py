@@ -34,7 +34,7 @@ def test_create_poll(mock_db, mock_render, mock_randint, client):
     )
     mock_db["polls"].insert_one.assert_called_once()
     assert response.status_code == 302
-    assert "/poll/123456" in response.headers["Location"]
+    assert response.headers["Location"].endswith("/created/123456")
 
 
 @patch("app.render_template")
@@ -69,13 +69,13 @@ def test_edit_poll(mock_db, mock_render, client):
     # 1. GET existing poll
     mock_poll = {"_id": "abc123", "question": "Edit me", "options": []}
     mock_db["polls"].find_one.return_value = mock_poll
-    response = client.get("/poll/abc123/edit")
+    response = client.get("/created/abc123/edit")
     assert response.status_code == 200
     mock_render.assert_called_with("edit.html", poll=mock_poll)
 
     # 2. POST update with valid data
     response = client.post(
-        "/poll/abc123/edit",
+        "/created/abc123/edit",
         data={"question": "Updated?", "options": ["New A", "New B"]},
         follow_redirects=False,
     )
@@ -94,10 +94,10 @@ def test_edit_poll(mock_db, mock_render, client):
     assert response.status_code == 302
 
     # 3. POST with missing data
-    response = client.post("/poll/abc123/edit", data={"question": "", "options": []})
+    response = client.post("/created/abc123/edit", data={"question": "", "options": []})
     assert response.status_code == 400
 
     # 4. GET non-existent poll
     mock_db["polls"].find_one.return_value = None
-    response = client.get("/poll/xyz/edit")
+    response = client.get("/created/xyz/edit")
     assert response.status_code == 404
