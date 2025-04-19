@@ -61,6 +61,7 @@ jobs:
         run: |
           ssh -p ${SSH_PORT:-22} $SSH_USER@$SSH_HOST << 'EOF'
             cd 5-final-awesome
-            docker compose restart
+            docker compose stop
+            docker compose up --pull always
           EOF
 
