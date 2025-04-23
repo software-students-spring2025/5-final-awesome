@@ -14,7 +14,7 @@
     <div class="d-flex fixed-top justify-content-end gap-3 mt-5 me-5">
       <div class="d-flex gap-3 mt-5 me-5">
         {% if user.is_authenticated %}
-          <a class="btn btn-primary col-6" href="">Profile</a>
+          <a class="btn btn-primary col-6" href="{{ url_for('profile') }}">Profile</a>
           <a class="btn btn-outline-primary col-6" href="{{ url_for('logout') }}">Log Out</a>
         {% else %}
           <a class="btn btn-primary col-6" href="{{ url_for('login' )}}">Log In</a>

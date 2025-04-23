@@ -69,6 +69,19 @@ def login():
         return redirect(url_for("login"))
     return render_template("login.html")
 
+@app.route("/profile", methods=["GET"])
+@login_required
+def profile():
+    polls = database["polls"].find({"owner": ObjectId(current_user.id)})
+    return render_template("profile.html", user=current_user, polls=polls)
+
+@app.route("/delete_poll/<poll_id>", methods=["GET"])
+@login_required
+def delete_poll(poll_id):
+    poll = database["polls"].find_one({"_id": str(poll_id)})
+    if poll and poll["owner"] == current_user.id:
+        database["polls"].delete_one({"_id": str(poll_id)})
+    return redirect(url_for("profile"))
 
 @app.route("/logout", methods=["GET"])
 @login_required

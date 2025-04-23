@@ -195,3 +195,14 @@ def test_logout_when_logged_in(mock_db, mock_logout_user, client):
     assert mock_logout_user.call_count == 1
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/")
+
+@patch("app.render_template")
+@patch("app.current_user")
+@patch("app.database")
+def test_profile_requires_login(mock_db, mock_current_user, mock_render, client):
+    resp = client.get("/profile", follow_redirects=False)
+    assert resp.status_code == 302
+    # login_required should bounce to /login?next=/profile
+    assert resp.headers["Location"].startswith("/login")
+    mock_db["polls"].find.assert_not_called()
+    mock_render.assert_not_called()
