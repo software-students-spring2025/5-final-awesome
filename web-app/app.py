@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from flask_login import (
     LoginManager,
     login_user,
@@ -99,10 +99,6 @@ def create_poll():
         question = request.form.get("question")
         options = request.form.getlist("options")
 
-        # Basic validation
-        if not question or not options or len(options) < 1 or len(options) > 4:
-            return "Please enter a question and between 1 to 4 options.", 400
-
         while True:
             poll_id = str(random.randint(100000, 999999))
             if not database["polls"].find_one({"_id": poll_id}):
@@ -144,9 +140,6 @@ def edit_poll(poll_id):
         question = request.form.get("question")
         options = request.form.getlist("options")
 
-        if not question or not options or len(options) < 1 or len(options) > 4:
-            return "Please enter a valid question and 1-4 options", 400
-
         database["polls"].update_one(
             {"_id": poll_id},
             {
@@ -165,7 +158,11 @@ def edit_poll(poll_id):
 def view_poll(poll_id):
     poll = database["polls"].find_one({"_id": poll_id})
     if not poll:
-        return "Poll not found", 404
+        flash(
+            "Poll not found. The poll may have been deleted or the ID is incorrect.",
+            "danger",
+        )
+        return redirect(url_for("index"))
 
     if request.method == "POST":
         try:
@@ -175,8 +172,12 @@ def view_poll(poll_id):
                     {"_id": poll_id},
                     {"$inc": {f"options.{option_index}.votes": 1}},
                 )
+            else:
+                flash("Invalid vote option selected.", "danger")
+                return redirect(url_for("view_poll", poll_id=poll_id))
         except (ValueError, TypeError):
-            return "Invalid vote", 400
+            flash("Invalid vote format.", "danger")
+            return redirect(url_for("view_poll", poll_id=poll_id))
 
         return redirect(url_for("poll_results", poll_id=poll_id))
 
