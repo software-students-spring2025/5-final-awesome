@@ -196,6 +196,7 @@ def test_logout_when_logged_in(mock_db, mock_logout_user, client):
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/")
 
+
 @patch("app.render_template")
 @patch("app.current_user")
 @patch("app.database")
