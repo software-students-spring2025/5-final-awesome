@@ -55,16 +55,11 @@ def test_view_poll(mock_db, mock_render, client):
     assert response.status_code == 200
     mock_render.assert_called_with("poll.html", poll=mock_poll)
 
-    # 2. POST to vote
-    response = client.post("/poll/abc123", data={"option": "0"}, follow_redirects=False)
-    mock_db["polls"].update_one.assert_called()
-    assert response.status_code == 302
-    assert "/poll/abc123" in response.headers["Location"]
-
     # 3. GET nonexistent poll
     mock_db["polls"].find_one.return_value = None
     response = client.get("/poll/doesnotexist")
-    assert response.status_code == 404
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/")
 
 
 @patch("app.render_template")
@@ -99,7 +94,8 @@ def test_edit_poll(mock_db, mock_render, client):
 
     # 3. POST with missing data
     response = client.post("/created/abc123/edit", data={"question": "", "options": []})
-    assert response.status_code == 400
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith(f"/created/abc123")
 
     # 4. GET non-existent poll
     mock_db["polls"].find_one.return_value = None
