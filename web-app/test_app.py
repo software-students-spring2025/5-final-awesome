@@ -124,7 +124,7 @@ def test_signup_post_creates_user_and_redirects(mock_db, client):
     resp = client.post(
         "/signup",
         data={"username": "alice", "password": "secret"},
-        follow_redirects=False
+        follow_redirects=False,
     )
     assert mock_users.insert_one.call_count == 1
     inserted = mock_users.insert_one.call_args[0][0]
@@ -152,18 +152,21 @@ def test_login_post_success(mock_db, mock_login_user, client):
     # pretend there is a user with a hashed password
     pw_hash = generate_password_hash("secret")
     mock_db["users"].find_one.return_value = {
-        "_id": 123, "username": "alice", "password": pw_hash
+        "_id": 123,
+        "username": "alice",
+        "password": pw_hash,
     }
 
     resp = client.post(
         "/login",
         data={"username": "alice", "password": "secret"},
-        follow_redirects=False
+        follow_redirects=False,
     )
 
     # Assert login_user was called with a User instance
     assert mock_login_user.call_count == 1
     assert resp.status_code == 302
+
 
 @patch("app.login_user")
 @patch("app.database")
@@ -172,9 +175,7 @@ def test_login_post_failure(mock_db, mock_login_user, client):
     mock_db["users"].find_one.return_value = None
 
     resp = client.post(
-        "/login",
-        data={"username": "bob", "password": "wrong"},
-        follow_redirects=False
+        "/login", data={"username": "bob", "password": "wrong"}, follow_redirects=False
     )
 
     # Assert login_user was never called

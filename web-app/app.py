@@ -25,6 +25,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+
 @login_manager.user_loader
 def load_user(user_id):
     user_data = database["users"].find_one({"_id": ObjectId(user_id)})
@@ -44,9 +45,9 @@ def signup():
         username = request.form.get("username")
         password = request.form.get("password")
         user = {
-                "username": username,
-                "password": generate_password_hash(password),
-            }
+            "username": username,
+            "password": generate_password_hash(password),
+        }
         user = database["users"].insert_one(user)
         return redirect(url_for("login"))
     return render_template("signup.html")
@@ -67,6 +68,7 @@ def login():
 
         return redirect(url_for("login"))
     return render_template("login.html")
+
 
 @app.route("/logout", methods=["GET"])
 @login_required
@@ -92,7 +94,7 @@ def create_poll():
 
         owner = 0
         if current_user.is_authenticated:
-            owner = current_user.id    
+            owner = current_user.id
 
         poll = {
             "_id": poll_id,
