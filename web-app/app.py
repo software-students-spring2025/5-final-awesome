@@ -17,6 +17,21 @@ database = client["awesome"]
 def index():
     return render_template("index.html")
 
+@app.route("/sign_up", methods=["GET", "POST"])
+def sign_up():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        print(f"From sign_up frontend: {username}, {password}")
+    return render_template("signup.html")
+
+@app.route("/log_in", methods=["GET", "POST"])
+def log_in():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        print(f"From log_in frontend: {username}, {password}")
+    return render_template("login.html")
 
 @app.route("/create", methods=["GET", "POST"])
 def create_poll():
