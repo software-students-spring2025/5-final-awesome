@@ -1,7 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask_login import (
+    LoginManager,
+    login_user,
+    logout_user,
+    login_required,
+    current_user,
+)
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson import ObjectId
+from user import User
+
 from datetime import datetime
 import random
 import os
@@ -12,28 +21,58 @@ app.secret_key = os.urandom(24)
 client = MongoClient("mongodb://mongodb:27017/")
 database = client["awesome"]
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+@login_manager.user_loader
+def load_user(user_id):
+    user_data = database["users"].find_one({"_id": ObjectId(user_id)})
+    if user_data:
+        return User(user_data["_id"], user_data["username"], user_data["password"])
+    return None
+
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    return render_template("index.html", user=current_user)
 
 
-@app.route("/sign_up", methods=["GET", "POST"])
-def sign_up():
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        print(f"From sign_up frontend: {username}, {password}")
+        user = {
+                "username": username,
+                "password": generate_password_hash(password),
+            }
+        user = database["users"].insert_one(user)
+        return redirect(url_for("login"))
     return render_template("signup.html")
 
 
-@app.route("/log_in", methods=["GET", "POST"])
-def log_in():
+@app.route("/login", methods=["GET", "POST"])
+def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        print(f"From log_in frontend: {username}, {password}")
+        user_data = database["users"].find_one({"username": username})
+
+        if user_data and check_password_hash(user_data["password"], password):
+            login_user(
+                User(user_data["_id"], user_data["username"], user_data["password"])
+            )
+            return redirect(url_for("index"))
+
+        return redirect(url_for("login"))
     return render_template("login.html")
+
+@app.route("/logout", methods=["GET"])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
 
 
 @app.route("/create", methods=["GET", "POST"])
@@ -51,8 +90,13 @@ def create_poll():
             if not database["polls"].find_one({"_id": poll_id}):
                 break
 
+        owner = 0
+        if current_user.is_authenticated:
+            owner = current_user.id    
+
         poll = {
             "_id": poll_id,
+            "owner": owner,
             "question": question,
             "options": [{"text": opt, "votes": 0} for opt in options],
             "created_at": datetime.utcnow(),
@@ -127,17 +171,6 @@ def poll_results(poll_id):
     if not poll:
         return "Poll not found", 404
     return render_template("results.html", poll=poll)
-
-
-@app.route("/database_test", methods=["GET"])
-def database_test():
-    """Access this url to add an arbitsrary entry to the database"""
-    user = {
-        "username": "sb",
-        "password": generate_password_hash("sb"),
-    }
-    database["users"].insert_one(user)
-    return "sb inserted", 200
 
 
 if __name__ == "__main__":
