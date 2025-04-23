@@ -203,3 +203,12 @@ def test_profile_requires_login(mock_db, mock_current_user, mock_render, client)
     assert resp.headers["Location"].startswith("/login")
     mock_db["polls"].find.assert_not_called()
     mock_render.assert_not_called()
+
+
+@patch("app.render_template")
+@patch("app.database")
+def test_poll_results(mock_db, mock_render, client):
+    mock_db["polls"].find_one.return_value = {"_id": "123456"}
+    response = client.get("/poll/123456/results")
+    assert response.status_code == 200
+    mock_render.assert_called()
