@@ -139,6 +139,10 @@ def database_test():
     database["users"].insert_one(user)
     return "sb inserted", 200
 
+@app.route("/avatar", methods=["GET"])
+def avatar():
+    return render_template("avatar.html")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Playground</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+
+</head>
+<body class="bg-light min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="container py-5">
+        <div class="row justify-content-center gap-3">
+            <div class="col-12 col-md-8 col-lg-6 d-flex justify-content-center align-items-center">
+                <img
+                    src="https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=eva&mouth=grill02&backgroundColor=1e88e5";
+                    alt="avatar" 
+                    class="img-fluid" loading="lazy"
+                    id = "avatar"
+                    />       
+            </div>
+            <div class="col-20 col-md-12 col-lg-8 d-flex justify-content-center align-items-center">
+                <div class="poll-container bg-white p-4 d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link active" id="background-color-tab" data-bs-toggle="tab" data-bs-target="#background-color" type="button" role="tab" aria-controls="background-color" aria-selected="true">Background Color</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link" id="eyes-tab" data-bs-toggle="tab" data-bs-target="#eyes" type="button" role="tab" aria-controls="eyes" aria-selected="false">Eyes</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link" id="mouth-tab" data-bs-toggle="tab" data-bs-target="#mouth" type="button" role="tab" aria-controls="mouth" aria-selected="false">Mouth</button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content px-2" id="myTabContent">
+                        <div class="tab-pane fade show active" id="background-color-details" role="tabpanel" aria-labelledby="background-color-tab"></div>
+                        <div class="tab-pane fade" id="eyes-details" role="tabpanel" aria-labelledby="eyes-tab">Eyes Tab</div>
+                        <div class="tab-pane fade" id="mouth-details" role="tabpanel" aria-labelledby="mouth-tab">Mouth Tab</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const avatar = document.getElementById("avatar");
+    const backgroundColorDetails = document.getElementById("background-color-details");
+    const eyesDetails = document.getElementById("eyes-details");
+    const mouthDetails = document.getElementById("mouth-details");
+
+    const backgroundColorOptions = ["1e88e5", "ffb300", "ff5722", "673ab7", "2196f3", "ff9800", "ffeb3b", "4caf50", "9c27b0", "e91e63"];
+    const eyesOptions = ["bulging", "dizzy","eva","frame1","frame2","glow","happy","hearts","robocop","round","roundFrame01","roundFrame02","sensor","shade01"];
+    const mouthOptions = ["bite","diagram","grill01","grill02","grill03","smile01","smile02","square01","square02"];
+    
+    // Track which tabs have been loaded
+    const loadedTabs = {
+        'background-color': false,
+        'eyes': false,
+        'mouth': false
+    };
+
+    // const originalSrc = "https://api.dicebear.com/9.x/bottts-neutral/svg?size=96&radius=50&eyes=eva&mouth=grill02&backgroundColor=1e88e5";
+
+    const updateAvatarSize = (newValue, url) => {
+        let currentValue = url.split("size=")[1];
+        let startIndex = url.indexOf("size=") +5;
+        let endIndex = url.indexOf("&", startIndex);
+        const newSrc = url.replace(url.substring(startIndex, endIndex), newValue);
+        console.log(newSrc);
+        return newSrc;
+    }
+
+    // Update the avatar URL
+    const updateAvatarURL= (property, newValue) => {
+        const originalSrc = avatar.src;
+        const lengthOfProperty = property.length+1;
+        let currentValue = originalSrc.split(property+"=")[1];
+        if (currentValue.includes("&")) {
+            currentValue = currentValue.split("&")[0];
+        }
+        const newSrc = originalSrc.replace(currentValue, newValue);
+        const updatedURL = updateAvatarSize(96, newSrc);
+        console.log(updatedURL);
+        return updatedURL;
+    }
+
+
+
+
+    // Update the avatar preview
+    const updateAvatarPreview = (newURL) => {
+        const updatedURL = updateAvatarSize(200, newURL);
+        avatar.src = updatedURL;
+    }
+
+    // Create the preview images
+    const createPreviewImages = (options, property, container) => {
+        container.innerHTML = "";
+        for (let i = 0; i < options.length; i++) {
+            const avatarOption = updateAvatarURL(property, options[i]);
+            console.log(avatarOption);
+            const newImg = document.createElement("img");
+            newImg.src = avatarOption;
+            newImg.classList.add("img-fluid");
+            newImg.classList.add("avatar-preview");
+            newImg.classList.add("p-1");
+            newImg.loading = "lazy";
+            newImg.addEventListener("click", function() {
+                
+                updateAvatarPreview(avatarOption);
+            });
+            container.appendChild(newImg);
+        }
+    };
+
+    // Load initial tab content (background color)
+    createPreviewImages(backgroundColorOptions, "backgroundColor", backgroundColorDetails);
+    loadedTabs['background-color'] = true;
+
+    const tabs = document.querySelectorAll(".nav-link");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function() {
+            const tabId = tab.id;
+            let detailsHTML = document.getElementById("background-color-details");
+            let targetOptions = backgroundColorOptions;
+            let targetProperty = "backgroundColor";
+            
+            if (tabId === "background-color-tab") {
+                detailsHTML = document.getElementById("background-color-details");
+                targetOptions = backgroundColorOptions;
+                targetProperty = "backgroundColor";
+                if (!loadedTabs['background-color']) {
+                    createPreviewImages(targetOptions, targetProperty, detailsHTML);
+                    loadedTabs['background-color'] = true;
+                }
+            }
+            else if (tabId === "eyes-tab") {
+                detailsHTML = document.getElementById("eyes-details");
+                targetOptions = eyesOptions;
+                targetProperty = "eyes";
+                if (!loadedTabs['eyes']) {
+                    createPreviewImages(targetOptions, targetProperty, detailsHTML);
+                    loadedTabs['eyes'] = true;
+                }
+            }
+            else if (tabId === "mouth-tab") {
+                detailsHTML = document.getElementById("mouth-details");
+                targetOptions = mouthOptions;
+                targetProperty = "mouth";
+                if (!loadedTabs['mouth']) {
+                    createPreviewImages(targetOptions, targetProperty, detailsHTML);
+                    loadedTabs['mouth'] = true;
+                }
+            }
+            
+            // Show the selected tab content
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active', 'show');
+            });
+            detailsHTML.classList.add('active', 'show');
+        });
+    });
+
+</script>
+
+
