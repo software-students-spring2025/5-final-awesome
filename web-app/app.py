@@ -79,7 +79,8 @@ def profile():
 
     if query:
         polls = [
-            poll for poll in polls
+            poll
+            for poll in polls
             if query in poll["question"].lower()
             or any(query in opt["text"].lower() for opt in poll["options"])
         ]
