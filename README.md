@@ -2,6 +2,12 @@
 
 An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
 
+## Team members
+- [Tony Zhao](https://github.com/Tonyzsp)
+- [Rin Qi](https://github.com/Rin-Qi)
+- [Corrine Huang](https://github.com/ChuqiaoHuang)
+- [Johnny Ding](https://github.com/yd2960)
+
 ## Development Environment Setup
 Boot your docker app\
 Orchestrate the containers using
