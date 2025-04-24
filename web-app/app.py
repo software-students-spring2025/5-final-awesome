@@ -191,6 +191,7 @@ def poll_results(poll_id):
         return "Poll not found", 404
     return render_template("results.html", poll=poll)
 
+
 # @app.route("/avatar", methods=["GET"])
 # def avatar():
 #     return render_template("avatar.html")
