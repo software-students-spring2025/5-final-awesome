@@ -1,8 +1,14 @@
 name: Deployment
 
 on:
+  workflow_run:
+    workflows:
+      - log github events
+      - Format and Test Check
+    types:
+      - completed
   push:
-    branches: [main, master]
+    branches: [main, master, Johnny]
   pull_request:
     types: [opened, closed]
     branches: [main, master]
@@ -31,9 +37,32 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./web-app/
+          context: ./web-app
+          file: ./web-app/production-dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/project-5-team-awesome:latest
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add remote host to known_hosts
+        run: |
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy to remote server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+        run: |
+          ssh -p ${SSH_PORT:-22} $SSH_USER@$SSH_HOST << 'EOF'
+            cd 5-final-awesome
+            docker compose stop
+            docker compose up -d --pull always --force-recreate
+          EOF
 
