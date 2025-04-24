@@ -128,20 +128,9 @@ def poll_results(poll_id):
         return "Poll not found", 404
     return render_template("results.html", poll=poll)
 
-
-@app.route("/database_test", methods=["GET"])
-def database_test():
-    """Access this url to add an arbitsrary entry to the database"""
-    user = {
-        "username": "sb",
-        "password": generate_password_hash("sb"),
-    }
-    database["users"].insert_one(user)
-    return "sb inserted", 200
-
-@app.route("/avatar", methods=["GET"])
-def avatar():
-    return render_template("avatar.html")
+# @app.route("/avatar", methods=["GET"])
+# def avatar():
+#     return render_template("avatar.html")
 
 
 if __name__ == "__main__":
