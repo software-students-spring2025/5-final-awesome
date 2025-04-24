@@ -73,8 +73,18 @@ def login():
 @app.route("/profile", methods=["GET"])
 @login_required
 def profile():
-    polls = database["polls"].find({"owner": ObjectId(current_user.id)})
-    return render_template("profile.html", user=current_user, polls=polls)
+    query = request.args.get("q", "").strip().lower()
+    cursor = database["polls"].find({"owner": ObjectId(current_user.id)})
+    polls = list(cursor)
+
+    if query:
+        polls = [
+            poll for poll in polls
+            if query in poll["question"].lower()
+            or any(query in opt["text"].lower() for opt in poll["options"])
+        ]
+
+    return render_template("profile.html", user=current_user, polls=polls, query=query)
 
 
 @app.route("/delete_poll/<poll_id>", methods=["GET"])
