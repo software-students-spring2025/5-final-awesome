@@ -37,4 +37,4 @@ python -m black .
 
 ## Acknowledgements
 
-This project leverages (Dice Bear API)[https://www.dicebear.com/], especially (bottts-neutral)[https://bottts.com/] created by (Pablo Stanley)[https://x.com/pablostanley]. We are grateful to the team at Dice Bear.
+This project leverages [Dice Bear API](https://www.dicebear.com/), especially [bottts-neutral](https://bottts.com/) created by [Pablo Stanley](https://x.com/pablostanley). We are grateful to the team at Dice Bear.
