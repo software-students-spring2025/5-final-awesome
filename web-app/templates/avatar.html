@@ -20,7 +20,7 @@
                     />       
             </div>
             <div class="col-20 col-md-12 col-lg-8 d-flex justify-content-center align-items-center">
-                <div class="poll-container bg-white p-4 d-flex flex-column gap-3">
+                <div class="d-block bg-white p-4 d-flex flex-column gap-3 overflow-auto" style="width: 600px; height: 420px;">
                     <div class="d-flex justify-content-center align-items-center">
                         <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -70,7 +70,7 @@
         let startIndex = url.indexOf("size=") +5;
         let endIndex = url.indexOf("&", startIndex);
         const newSrc = url.replace(url.substring(startIndex, endIndex), newValue);
-        console.log(newSrc);
+        // console.log(newSrc);
         return newSrc;
     }
 
@@ -84,17 +84,32 @@
         }
         const newSrc = originalSrc.replace(currentValue, newValue);
         const updatedURL = updateAvatarSize(96, newSrc);
-        console.log(updatedURL);
+        // console.log(updatedURL);
+        // console.log("originalSrc", originalSrc);
+        // console.log("newSrc", newSrc);
         return updatedURL;
     }
-
-
-
 
     // Update the avatar preview
     const updateAvatarPreview = (newURL) => {
         const updatedURL = updateAvatarSize(200, newURL);
         avatar.src = updatedURL;
+        // console.log("preview", avatar.src)
+        Object.keys(loadedTabs).forEach(tab => {
+            // console.log("tab", tab);
+            if (tab === "background-color") {   
+                // console.log("background-color");
+                createPreviewImages(backgroundColorOptions, "backgroundColor", backgroundColorDetails);
+            }
+            else if (tab === "eyes") {
+                // console.log("eyes");
+                createPreviewImages(eyesOptions, "eyes", eyesDetails);
+            }
+            else if (tab === "mouth") {
+                // console.log("mouth");
+                createPreviewImages(mouthOptions, "mouth", mouthDetails);
+            }});
+        return avatar.src;
     }
 
     // Create the preview images
@@ -102,16 +117,17 @@
         container.innerHTML = "";
         for (let i = 0; i < options.length; i++) {
             const avatarOption = updateAvatarURL(property, options[i]);
-            console.log(avatarOption);
+            // console.log(avatarOption);
             const newImg = document.createElement("img");
             newImg.src = avatarOption;
             newImg.classList.add("img-fluid");
             newImg.classList.add("avatar-preview");
             newImg.classList.add("p-1");
             newImg.loading = "lazy";
+            newImg.role = "button";
             newImg.addEventListener("click", function() {
-                
                 updateAvatarPreview(avatarOption);
+                // console.log("clicked", avatar.src);
             });
             container.appendChild(newImg);
         }
@@ -137,6 +153,7 @@
                     createPreviewImages(targetOptions, targetProperty, detailsHTML);
                     loadedTabs['background-color'] = true;
                 }
+                // console.log("background-color-tab");
             }
             else if (tabId === "eyes-tab") {
                 detailsHTML = document.getElementById("eyes-details");
