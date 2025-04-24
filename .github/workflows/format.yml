@@ -1,4 +1,4 @@
-name: Format and Test Check
+name: CI
 on: [push, pull_request]
 
 jobs:
