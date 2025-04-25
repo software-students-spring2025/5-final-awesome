@@ -44,6 +44,10 @@ def signup():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        user = database["users"].find_one({"username": username})
+        if user:
+            flash("Username already exists", "warning")
+            return redirect(url_for("signup"))
         user = {
             "username": username,
             "password": generate_password_hash(password),
@@ -73,8 +77,19 @@ def login():
 @app.route("/profile", methods=["GET"])
 @login_required
 def profile():
-    polls = database["polls"].find({"owner": ObjectId(current_user.id)})
-    return render_template("profile.html", user=current_user, polls=polls)
+    query = request.args.get("q", "").strip().lower()
+    cursor = database["polls"].find({"owner": ObjectId(current_user.id)})
+    polls = list(cursor)
+
+    if query:
+        polls = [
+            poll
+            for poll in polls
+            if query in poll["question"].lower()
+            or any(query in opt["text"].lower() for opt in poll["options"])
+        ]
+
+    return render_template("profile.html", user=current_user, polls=polls, query=query)
 
 
 @app.route("/delete_poll/<poll_id>", methods=["GET"])
@@ -113,7 +128,7 @@ def create_poll():
             "owner": owner,
             "question": question,
             "options": [{"text": opt, "votes": 0} for opt in options],
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(),
         }
 
         database["polls"].insert_one(poll)
