@@ -116,7 +116,7 @@ def test_signup_get(mock_db, mock_render, client):
 @patch("app.database")
 def test_signup_post_creates_user_and_redirects(mock_db, client):
     mock_users = mock_db["users"]
-    mock_users.find_one.return_value = None  
+    mock_users.find_one.return_value = None
 
     resp = client.post(
         "/signup",
@@ -213,6 +213,7 @@ def test_poll_results(mock_db, mock_render, client):
     response = client.get("/poll/123456/results")
     assert response.status_code == 200
     mock_render.assert_called()
+
 
 @patch("app.render_template")
 @patch("app.database")
