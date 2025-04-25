@@ -44,6 +44,10 @@ def signup():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        user = database["users"].find_one({"username": username})
+        if user:
+            flash("Username already exists", "warning")
+            return redirect(url_for("signup"))
         user = {
             "username": username,
             "password": generate_password_hash(password),
@@ -124,7 +128,7 @@ def create_poll():
             "owner": owner,
             "question": question,
             "options": [{"text": opt, "votes": 0} for opt in options],
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(),
         }
 
         database["polls"].insert_one(poll)

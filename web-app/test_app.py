@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from app import app
 from flask import url_for
 from flask_login import current_user
@@ -116,16 +116,17 @@ def test_signup_get(mock_db, mock_render, client):
 @patch("app.database")
 def test_signup_post_creates_user_and_redirects(mock_db, client):
     mock_users = mock_db["users"]
+    mock_users.find_one.return_value = None  
 
     resp = client.post(
         "/signup",
-        data={"username": "alice", "password": "secret"},
+        data={"username": "unique", "password": "secret"},
         follow_redirects=False,
     )
     assert mock_users.insert_one.call_count == 1
     inserted = mock_users.insert_one.call_args[0][0]
 
-    assert inserted["username"] == "alice"
+    assert inserted["username"] == "unique"
     assert inserted["password"] != "secret"
 
     assert resp.status_code == 302
@@ -212,3 +213,46 @@ def test_poll_results(mock_db, mock_render, client):
     response = client.get("/poll/123456/results")
     assert response.status_code == 200
     mock_render.assert_called()
+
+@patch("app.render_template")
+@patch("app.database")
+@patch("app.current_user")
+def test_profile_no_query(mock_current_user, mock_db, mock_render, client):
+    owner = "aaaaaaaaaaaaaaaaaaaaaaaa"
+    mock_current_user.id = owner
+    POLL1 = {
+        "_id": ObjectId(),
+        "question": "First Poll",
+        "options": [{"text": "Yes"}, {"text": "No"}],
+        "owner": ObjectId(owner),
+    }
+    POLL2 = {
+        "_id": ObjectId(),
+        "question": "Searchable Poll",
+        "options": [{"text": "Foo"}, {"text": "Bar"}],
+        "owner": ObjectId(owner),
+    }
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "680930a5ee1e01323d98a8b2"
+
+    # Stub out database["polls"].find() to return our two sample polls
+    mock_collection = MagicMock()
+    mock_collection.find.return_value = [POLL1, POLL2]
+    mock_db.__getitem__.return_value = mock_collection
+
+    rv = client.get("/profile")
+    assert rv.status_code == 200
+
+    # Ensure we rendered the right template once
+    mock_render.assert_called_once()
+    args, kwargs = mock_render.call_args
+
+    # First positional arg is the template name
+    assert args[0] == "profile.html"
+    # The view should pass an empty query
+    assert kwargs["query"] == ""
+    # Both polls should be returned
+    assert len(kwargs["polls"]) == 2
+    titles = {p["question"] for p in kwargs["polls"]}
+    assert titles == {"First Poll", "Searchable Poll"}
