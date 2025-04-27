@@ -51,7 +51,7 @@ def signup():
         user = {
             "username": username,
             "password": generate_password_hash(password),
-            "avatar": "https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=eva&mouth=grill02&backgroundColor=1e88e5"
+            "avatar": "https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=eva&mouth=grill02&backgroundColor=1e88e5",
         }
         user = database["users"].insert_one(user)
         return redirect(url_for("login"))
@@ -92,7 +92,13 @@ def profile():
 
     user_data = database["users"].find_one({"username": current_user.username})
 
-    return render_template("profile.html", user=current_user, polls=polls, query=query, avatar_url=user_data["avatar"])
+    return render_template(
+        "profile.html",
+        user=current_user,
+        polls=polls,
+        query=query,
+        avatar_url=user_data["avatar"],
+    )
 
 
 @app.route("/delete_poll/<poll_id>", methods=["GET"])
@@ -212,10 +218,12 @@ def poll_results(poll_id):
 
 @app.route("/avatar", methods=["POST"])
 def avatar():
-    avatar_url = request.form.get('avatar_url')
-    username = request.form.get('username')
+    avatar_url = request.form.get("avatar_url")
+    username = request.form.get("username")
     try:
-        database["users"].update_one({"username": username}, {"$set": {"avatar": avatar_url}})
+        database["users"].update_one(
+            {"username": username}, {"$set": {"avatar": avatar_url}}
+        )
         return redirect(url_for("profile"))
     except Exception as e:
         return redirect(url_for("index"))
