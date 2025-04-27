@@ -30,10 +30,6 @@
               <i class="bi bi-box-arrow-in-right me-2"></i>Go to Voting Page
             </a>
 
-            <a href="{{ url_for('edit_poll', poll_id=poll._id) }}" class="btn btn-warning btn-lg">
-              <i class="bi bi-pencil-square me-2"></i>Edit Poll
-            </a>
-
             <!-- View Results Button -->
             <a href="{{ url_for('poll_results', poll_id=poll._id) }}" class="btn btn-primary btn-lg text-white">
                 <i class="bi bi-bar-chart-line me-2"></i>View Results
