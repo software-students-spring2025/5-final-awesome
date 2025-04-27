@@ -3,7 +3,8 @@
 
 # Easy Anonymous Polls
 
-This project allows users to create polls, which generates a poll code that can be used to vote on polls. Log in and sign up features are optional for users who wants to keep track of their polls.
+This project allows users to create polls, which generates a poll code that can be used to vote on polls. Log in and sign up features are optional for users who wants to keep track of their polls.\
+Production server with gunicorn is on [http://45.55.55.183:8000/](http://45.55.55.183:8000/).
 
 ## Team members
 
