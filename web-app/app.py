@@ -154,30 +154,6 @@ def poll_created(poll_id):
     return render_template("created.html", poll=poll)
 
 
-@app.route("/created/<poll_id>/edit", methods=["GET", "POST"])
-def edit_poll(poll_id):
-    poll = database["polls"].find_one({"_id": poll_id})
-    if not poll:
-        return "Poll not found", 404
-
-    if request.method == "POST":
-        question = request.form.get("question")
-        options = request.form.getlist("options")
-
-        database["polls"].update_one(
-            {"_id": poll_id},
-            {
-                "$set": {
-                    "question": question,
-                    "options": [{"text": opt, "votes": 0} for opt in options],
-                }
-            },
-        )
-        return redirect(url_for("poll_created", poll_id=poll_id))
-
-    return render_template("edit.html", poll=poll)
-
-
 @app.route("/poll/<poll_id>", methods=["GET", "POST"])
 def view_poll(poll_id):
     poll = database["polls"].find_one({"_id": poll_id})
