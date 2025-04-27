@@ -51,6 +51,7 @@ def signup():
         user = {
             "username": username,
             "password": generate_password_hash(password),
+            "avatar": "https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=eva&mouth=grill02&backgroundColor=1e88e5"
         }
         user = database["users"].insert_one(user)
         return redirect(url_for("login"))
@@ -207,9 +208,42 @@ def poll_results(poll_id):
     return render_template("results.html", poll=poll)
 
 
-@app.route("/avatar", methods=["GET"])
+@app.route("/avatar", methods=["POST"])
 def avatar():
-    return render_template("avatar.html")
+    avatar_url = request.form.get('avatar_url')
+    username = request.form.get('username')
+    # Process the avatar URL...
+    try:
+        database["users"].update_one({"username": username}, {"$set": {"avatar": avatar_url}})
+        user_data = database["users"].find_one({"username": username})
+        return redirect(url_for("profile", user=user_data))
+    except Exception as e:
+        return redirect(url_for("index"))
+
+
+@app.route("/fakepoll", methods=["GET"])
+def fakepoll():
+    query = request.args.get("q", "").strip().lower()
+    return render_template("fakepoll.html",
+                           user={"username":"Rin", "password":"12345678", "avatar":"https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=eva&mouth=grill02&backgroundColor=1e88e5"},
+                           polls=[{
+                            "_id": "123456",
+                            "question": "What is the best programming language?",
+                            "options": [
+                                {"text": "Python", "votes": 10},
+                                {"text": "Java", "votes": 5},
+                                {"text": "C++", "votes": 3},
+                                {"text": "JavaScript", "votes": 2},
+                            ],
+                            },{
+                            "_id": "123457",
+                            "question": "What is the best professor?",
+                            "options": [
+                                {"text": "A", "votes": 100},
+                                {"text": "B", "votes": 23},
+                            ]}],
+                            query=query
+                           )
 
 
 @app.errorhandler(404)
