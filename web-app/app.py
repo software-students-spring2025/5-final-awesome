@@ -90,7 +90,9 @@ def profile():
             or any(query in opt["text"].lower() for opt in poll["options"])
         ]
 
-    return render_template("profile.html", user=current_user, polls=polls, query=query)
+    user_data = database["users"].find_one({"username": current_user.username})
+
+    return render_template("profile.html", user=current_user, polls=polls, query=query, avatar_url=user_data["avatar"])
 
 
 @app.route("/delete_poll/<poll_id>", methods=["GET"])
@@ -215,35 +217,9 @@ def avatar():
     # Process the avatar URL...
     try:
         database["users"].update_one({"username": username}, {"$set": {"avatar": avatar_url}})
-        user_data = database["users"].find_one({"username": username})
-        return redirect(url_for("profile", user=user_data))
+        return redirect(url_for("profile"))
     except Exception as e:
         return redirect(url_for("index"))
-
-
-@app.route("/fakepoll", methods=["GET"])
-def fakepoll():
-    query = request.args.get("q", "").strip().lower()
-    return render_template("fakepoll.html",
-                           user={"username":"Rin", "password":"12345678", "avatar":"https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=eva&mouth=grill02&backgroundColor=1e88e5"},
-                           polls=[{
-                            "_id": "123456",
-                            "question": "What is the best programming language?",
-                            "options": [
-                                {"text": "Python", "votes": 10},
-                                {"text": "Java", "votes": 5},
-                                {"text": "C++", "votes": 3},
-                                {"text": "JavaScript", "votes": 2},
-                            ],
-                            },{
-                            "_id": "123457",
-                            "question": "What is the best professor?",
-                            "options": [
-                                {"text": "A", "votes": 100},
-                                {"text": "B", "votes": 23},
-                            ]}],
-                            query=query
-                           )
 
 
 @app.errorhandler(404)

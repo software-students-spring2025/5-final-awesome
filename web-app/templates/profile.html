@@ -8,55 +8,250 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"/>
 </head>
-<body>
-  <div class="poll-container">
-    <h1 class="poll-title">Welcome, {{ user.username }}</h1>
+<body class="bg-light d-flex align-items-center justify-content-center flex-column" style="min-height: 100vh;">
+    <div class="min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="poll-container">
+        <div class="d-flex justify-content-center gap-3 mb-4">
+        <h1 class="align-baseline">Welcome, {{ user.username }}</h1>
+        <a href="#avatar"><img src="{{avatar_url}}" alt="Avatar" class="avatar" style="width: 40px; height: 40px;" roll="button"></a>
+        </div>
+        <!-- Search Bar -->
+        <form method="GET" action="{{ url_for('fakepoll') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control form-option" name="q" placeholder="Search by question or answer..." value="{{ query or '' }}">
+            <button class="btn btn-outline-primary" type="submit">
+            <i class="bi bi-search"></i> Search
+            </button>
+        </div>
+        </form>
 
-    <!-- Search Bar -->
-    <form method="GET" action="{{ url_for('profile') }}" class="mb-4">
-      <div class="input-group">
-        <input type="text" class="form-control form-option" name="q" placeholder="Search by question or answer..." value="{{ query or '' }}">
-        <button class="btn btn-outline-primary" type="submit">
-          <i class="bi bi-search"></i> Search
-        </button>
-      </div>
-    </form>
+        <!-- Poll List -->
+        {% if not polls %}
+        <p class="text-muted text-center">No polls found.</p>
+        {% else %}
+        <ul class="list-group mb-4">
+            {% for poll in polls %}
+            <li class="list-group-item d-flex justify-content-between align-items-center option-input">
+                <div>
+                <strong>{{ poll.question }}</strong><br>
+                <small class="text-muted">ID: {{ poll._id }}</small>
+                </div>
+                <div class="btn-group">
+                <a href="{{ url_for('view_poll', poll_id=poll._id) }}" class="btn btn-sm btn-success">
+                    <i class="bi bi-box-arrow-in-right"></i> Vote
+                </a>
+                <a href="{{ url_for('poll_results', poll_id=poll._id) }}" class="btn btn-sm btn-info text-white">
+                    <i class="bi bi-bar-chart-line"></i> Results
+                </a>
+                <a href="{{ url_for('delete_poll', poll_id=poll._id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this poll?')">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
-    <!-- Poll List -->
-    {% if not polls %}
-      <p class="text-muted text-center">No polls found.</p>
-    {% else %}
-      <ul class="list-group mb-4">
-        {% for poll in polls %}
-          <li class="list-group-item d-flex justify-content-between align-items-center option-input">
-            <div>
-              <strong>{{ poll.question }}</strong><br>
-              <small class="text-muted">ID: {{ poll._id }}</small>
-            </div>
-            <div class="btn-group">
-              <a href="{{ url_for('view_poll', poll_id=poll._id) }}" class="btn btn-sm btn-success">
-                <i class="bi bi-box-arrow-in-right"></i> Vote
-              </a>
-              <a href="{{ url_for('poll_results', poll_id=poll._id) }}" class="btn btn-sm btn-info text-white">
-                <i class="bi bi-bar-chart-line"></i> Results
-              </a>
-              <a href="{{ url_for('delete_poll', poll_id=poll._id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this poll?')">
-                <i class="bi bi-trash"></i> Delete
-              </a>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    <!-- Back to Home -->
-    <div class="text-center align-items-center">
-      <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-house-door"></i> Back to Home
-      </a>
+        <!-- Back to Home -->
+        <div class="text-center align-items-center">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-house-door"></i> Back to Home
+        </a>
+        </div>
     </div>
-  </div>
-
+</div>
+  <div class="container py-5">
+    <div class="row justify-content-center gap-3">
+        <div class="col-12 col-md-8 col-lg-6 d-flex justify-content-center align-items-center">
+            <form method="POST" action="{{ url_for('avatar') }}" id="avatarForm">
+                <input type="hidden" name="username" id="usernameInput" value="{{ user.username }}">
+                <input type="hidden" name="avatar_url" id="avatarUrlInput">
+                <img
+                src="{{avatar_url}}"
+                alt="avatar" 
+                class="img-fluid" loading="lazy"
+                id="avatar"
+                />       
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="col-20 col-md-12 col-lg-8 d-flex justify-content-center align-items-center">
+            <div class="d-block bg-white p-4 d-flex flex-column gap-3 overflow-auto" style="width: 600px; height: 420px;">
+                <div class="d-flex justify-content-center align-items-center">
+                    <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link active" id="background-color-tab" data-bs-toggle="tab" data-bs-target="#background-color" type="button" role="tab" aria-controls="background-color" aria-selected="true">Background Color</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="eyes-tab" data-bs-toggle="tab" data-bs-target="#eyes" type="button" role="tab" aria-controls="eyes" aria-selected="false">Eyes</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="mouth-tab" data-bs-toggle="tab" data-bs-target="#mouth" type="button" role="tab" aria-controls="mouth" aria-selected="false">Mouth</button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content px-2" id="myTabContent">
+                    <div class="tab-pane fade show active" id="background-color-details" role="tabpanel" aria-labelledby="background-color-tab"></div>
+                    <div class="tab-pane fade" id="eyes-details" role="tabpanel" aria-labelledby="eyes-tab">Eyes Tab</div>
+                    <div class="tab-pane fade" id="mouth-details" role="tabpanel" aria-labelledby="mouth-tab">Mouth Tab</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const avatar = document.getElementById("avatar");
+    const avatarForm = document.getElementById("avatarForm");
+    const avatarUrlInput = document.getElementById("avatarUrlInput");
+    
+    avatar.addEventListener("click", function() {
+        console.log("clicked", avatar.src);
+    });
+
+    // Update hidden input before form submission
+    avatarForm.addEventListener('submit', function(e) {
+        avatarUrlInput.value = avatar.src;
+    });
+
+    const backgroundColorDetails = document.getElementById("background-color-details");
+    const eyesDetails = document.getElementById("eyes-details");
+    const mouthDetails = document.getElementById("mouth-details");
+
+    const backgroundColorOptions = ["1e88e5", "ffb300", "ff5722", "673ab7", "2196f3", "ff9800", "ffeb3b", "4caf50", "9c27b0", "e91e63"];
+    const eyesOptions = ["bulging", "dizzy","eva","frame1","frame2","glow","happy","hearts","robocop","round","roundFrame01","roundFrame02","sensor","shade01"];
+    const mouthOptions = ["bite","diagram","grill01","grill02","grill03","smile01","smile02","square01","square02"];
+    
+    // Track which tabs have been loaded
+    const loadedTabs = {
+        'background-color': false,
+        'eyes': false,
+        'mouth': false
+    };
+
+    // const originalSrc = "https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=eva&mouth=grill02&backgroundColor=1e88e5";
+
+    const updateAvatarSize = (newValue, url) => {
+        let currentValue = url.split("size=")[1];
+        let startIndex = url.indexOf("size=") +5;
+        let endIndex = url.indexOf("&", startIndex);
+        const newSrc = url.replace(url.substring(startIndex, endIndex), newValue);
+        // console.log(newSrc);
+        return newSrc;
+    }
+
+    // Update the avatar URL
+    const updateAvatarURL= (property, newValue) => {
+        const originalSrc = avatar.src;
+        const lengthOfProperty = property.length+1;
+        let currentValue = originalSrc.split(property+"=")[1];
+        if (currentValue.includes("&")) {
+            currentValue = currentValue.split("&")[0];
+        }
+        const newSrc = originalSrc.replace(currentValue, newValue);
+        const updatedURL = updateAvatarSize(96, newSrc);
+        // console.log(updatedURL);
+        // console.log("originalSrc", originalSrc);
+        // console.log("newSrc", newSrc);
+        return updatedURL;
+    }
+
+    // Update the avatar preview
+    const updateAvatarPreview = (newURL) => {
+        const updatedURL = updateAvatarSize(200, newURL);
+        avatar.src = updatedURL;
+        // console.log("preview", avatar.src)
+        Object.keys(loadedTabs).forEach(tab => {
+            // console.log("tab", tab);
+            if (tab === "background-color") {   
+                // console.log("background-color");
+                createPreviewImages(backgroundColorOptions, "backgroundColor", backgroundColorDetails);
+            }
+            else if (tab === "eyes") {
+                // console.log("eyes");
+                createPreviewImages(eyesOptions, "eyes", eyesDetails);
+            }
+            else if (tab === "mouth") {
+                // console.log("mouth");
+                createPreviewImages(mouthOptions, "mouth", mouthDetails);
+            }});
+        return avatar.src;
+    }
+
+    // Create the preview images
+    const createPreviewImages = (options, property, container) => {
+        container.innerHTML = "";
+        for (let i = 0; i < options.length; i++) {
+            const avatarOption = updateAvatarURL(property, options[i]);
+            // console.log(avatarOption);
+            const newImg = document.createElement("img");
+            newImg.src = avatarOption;
+            newImg.classList.add("img-fluid");
+            newImg.classList.add("avatar-preview");
+            newImg.classList.add("p-1");
+            newImg.loading = "lazy";
+            newImg.role = "button";
+            newImg.addEventListener("click", function() {
+                updateAvatarPreview(avatarOption);
+                // console.log("clicked", avatar.src);
+            });
+            container.appendChild(newImg);
+        }
+    };
+
+    // Load initial tab content (background color)
+    createPreviewImages(backgroundColorOptions, "backgroundColor", backgroundColorDetails);
+    loadedTabs['background-color'] = true;
+
+    // Load options for preview images
+    const tabs = document.querySelectorAll(".nav-link");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function() {
+            const tabId = tab.id;
+            let detailsHTML = document.getElementById("background-color-details");
+            let targetOptions = backgroundColorOptions;
+            let targetProperty = "backgroundColor";
+            
+            if (tabId === "background-color-tab") {
+                detailsHTML = document.getElementById("background-color-details");
+                targetOptions = backgroundColorOptions;
+                targetProperty = "backgroundColor";
+                if (!loadedTabs['background-color']) {
+                    createPreviewImages(targetOptions, targetProperty, detailsHTML);
+                    loadedTabs['background-color'] = true;
+                }
+                // console.log("background-color-tab");
+            }
+            else if (tabId === "eyes-tab") {
+                detailsHTML = document.getElementById("eyes-details");
+                targetOptions = eyesOptions;
+                targetProperty = "eyes";
+                if (!loadedTabs['eyes']) {
+                    createPreviewImages(targetOptions, targetProperty, detailsHTML);
+                    loadedTabs['eyes'] = true;
+                }
+            }
+            else if (tabId === "mouth-tab") {
+                detailsHTML = document.getElementById("mouth-details");
+                targetOptions = mouthOptions;
+                targetProperty = "mouth";
+                if (!loadedTabs['mouth']) {
+                    createPreviewImages(targetOptions, targetProperty, detailsHTML);
+                    loadedTabs['mouth'] = true;
+                }
+            }
+            
+            // Show the selected tab content
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active', 'show');
+            });
+            detailsHTML.classList.add('active', 'show');
+        });
+    });
+
+</script>
 </body>
 </html>
