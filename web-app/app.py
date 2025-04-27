@@ -214,7 +214,6 @@ def poll_results(poll_id):
 def avatar():
     avatar_url = request.form.get('avatar_url')
     username = request.form.get('username')
-    # Process the avatar URL...
     try:
         database["users"].update_one({"username": username}, {"$set": {"avatar": avatar_url}})
         return redirect(url_for("profile"))

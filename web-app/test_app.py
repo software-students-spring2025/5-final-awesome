@@ -257,3 +257,29 @@ def test_profile_no_query(mock_current_user, mock_db, mock_render, client):
     assert len(kwargs["polls"]) == 2
     titles = {p["question"] for p in kwargs["polls"]}
     assert titles == {"First Poll", "Searchable Poll"}
+
+@patch("app.database")
+def test_avatar_update_success(mock_db, client):
+    mock_db["users"].update_one.return_value = {"_id": 123,
+                                                "username": "alice",
+                                                "password": 12345678,
+                                                "avatar": "https://testURL"}
+    response = client.post(
+        "/avatar",
+        data={"avatar_url": "https://testURL", "username": "testUser"},
+        follow_redirects=False,
+    )
+    mock_db["users"].update_one.assert_called_once()
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/profile")
+
+@patch("app.database")
+def test_avatar_update_failure(mock_db, client):
+    mock_db["users"].update_one.side_effect = Exception("Test error")
+    response = client.post(
+        "/avatar",
+        data={"avatar_url": "https://testURL", "username": "testUser"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/")
