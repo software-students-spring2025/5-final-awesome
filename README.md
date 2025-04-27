@@ -28,6 +28,11 @@ docker compose up --build
 
 The web app now runs on [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+## Environment Variables Setup
+
+Look at [web-app/example.env](web-app/example.env)\
+Simply rename the file to ```.env``` and change the value of ```SECRET_KEY``` as you like
+
 ## Install and Run Formatter
 
 ```

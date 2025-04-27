@@ -4,6 +4,8 @@ on: [push, pull_request]
 jobs:
   format:
     runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python

@@ -14,9 +14,9 @@ from user import User
 from datetime import datetime
 import random
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv())
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 # Connection string mongodb://localhost:27017/
