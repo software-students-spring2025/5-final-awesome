@@ -1,9 +1,9 @@
 ![CI](https://github.com/software-students-spring2025/5-final-awesome/actions/workflows/format.yml/badge.svg)
 ![CD](https://github.com/software-students-spring2025/5-final-awesome/actions/workflows/deploy.yml/badge.svg)
 
-# Final Project
+# Easy Anonymous Polls
 
-An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
+This project allows users to create polls, which generates a poll code that can be used to vote on polls. Log in and sign up features are optional for users who wants to keep track of their polls.
 
 ## Team members
 
@@ -11,6 +11,11 @@ An exercise to put to practice software development teamwork, subsystem communic
 - [Rin Qi](https://github.com/Rin-Qi)
 - [Corrine Huang](https://github.com/ChuqiaoHuang)
 - [Johnny Ding](https://github.com/yd2960)
+
+## Docker Hub Images
+
+- [Web app image](https://hub.docker.com/repository/docker/yd2960/project-5-team-awesome/tags/latest/sha256-a0da42c6182e949fb3cad374a3dba9f22b7249fefd09ea0f6b80ba587344b347)
+- [Official Mongodb Image](https://hub.docker.com/_/mongo)
 
 ## Development Environment Setup
 
