@@ -43,7 +43,7 @@
           {% endif %}
           <form action="{{ url_for('view_poll', poll_id='') }}" method="POST" class="needs-validation" novalidate>
             <div class="mb-4">
-              <label for="pollCode" class="form-label fw-bold">Enter Poll Code</label>
+              <label for="pollCode" class="form-label fw-bold" required>Enter Poll Code</label>
               <div class="input-group">
                 <span class="input-group-text bg-primary text-white">
                   <i class="bi bi-key"></i>
