@@ -1,5 +1,5 @@
-![CI](https://github.com/software-students-spring2025/5-final-awesome/actions/workflows/format.yml/badge.svg)
-![CD](https://github.com/software-students-spring2025/5-final-awesome/actions/workflows/test.yml/badge.svg)
+![CI](https://github.com/software-students-spring2025/5-final-awesome/actions/workflows/test.yml/badge.svg)
+![CD](https://github.com/software-students-spring2025/5-final-awesome/actions/workflows/deploy.yml/badge.svg)
 
 # Easy Anonymous Polls
 
