@@ -246,3 +246,36 @@ def test_avatar_update_failure(mock_db, client):
     )
     assert response.status_code == 302
     assert response.headers["Location"].endswith("/")
+
+
+@patch("app.render_template")
+@patch("app.database")
+def test_poll_created_exists(mock_db, mock_render, client):
+    # Arrange: make the DB return a poll
+    mock_poll = {
+        "_id": "abc123",
+        "question": "Is this working?",
+        "options": [{"text": "Yes", "votes": 0}, {"text": "No", "votes": 0}],
+    }
+    mock_db["polls"].find_one.return_value = mock_poll
+
+    # Act
+    resp = client.get("/created/abc123")
+
+    # Assert
+    assert resp.status_code == 200
+    mock_render.assert_called_once_with("created.html", poll=mock_poll)
+
+
+@patch("app.render_template")
+@patch("app.database")
+def test_poll_created_not_found(mock_db, mock_render, client):
+    # Arrange: make the DB return nothing
+    mock_db["polls"].find_one.return_value = None
+
+    # Act
+    resp = client.get("/created/doesnotexist")
+
+    # Assert
+    assert resp.status_code == 404
+    assert b"Poll not found" in resp.data
