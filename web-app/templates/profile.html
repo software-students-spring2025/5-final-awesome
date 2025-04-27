@@ -16,7 +16,7 @@
         <a href="#avatar"><img src="{{avatar_url}}" alt="Avatar" class="avatar" style="width: 40px; height: 40px;" roll="button"></a>
         </div>
         <!-- Search Bar -->
-        <form method="GET" action="{{ url_for('fakepoll') }}" class="mb-4">
+        <form method="GET" action="{{ url_for('profile') }}" class="mb-4">
         <div class="input-group">
             <input type="text" class="form-control form-option" name="q" placeholder="Search by question or answer..." value="{{ query or '' }}">
             <button class="btn btn-outline-primary" type="submit">
