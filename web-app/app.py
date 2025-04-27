@@ -14,9 +14,11 @@ from user import User
 from datetime import datetime
 import random
 import os
+from dotenv import load_dotenv, find_dotenv
 
+load_dotenv(find_dotenv())
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.getenv("SECRET_KEY")
 # Connection string mongodb://localhost:27017/
 client = MongoClient("mongodb://mongodb:27017/")
 database = client["awesome"]
@@ -60,19 +62,24 @@ def signup():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        user_data = database["users"].find_one({"username": username})
+    if request.method == "GET":
+        return render_template("login.html")
 
-        if user_data and check_password_hash(user_data["password"], password):
-            login_user(
-                User(user_data["_id"], user_data["username"], user_data["password"])
-            )
-            return redirect(url_for("index"))
+    username = request.form.get("username")
+    password = request.form.get("password")
+    user_data = database["users"].find_one({"username": username})
 
+    if not user_data:
+        flash("Username not found", "danger")
         return redirect(url_for("login"))
-    return render_template("login.html")
+
+    if not check_password_hash(user_data["password"], password):
+        flash("Incorrect password", "danger")
+        return redirect(url_for("login"))
+
+    login_user(User(user_data["_id"], user_data["username"], user_data["password"]))
+
+    return redirect(url_for("index"))
 
 
 @app.route("/profile", methods=["GET"])
