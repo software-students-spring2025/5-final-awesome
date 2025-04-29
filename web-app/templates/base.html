@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Poll App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  </head>
+  <body class="bg-light">
+    <div class="position-fixed top-0 start-0 w-100 h-100 bg-gradient" style="z-index: -1;" id="background-container">
+      <div class="background-avatars" id="background-avatars">
+      </div>
+    </div>
+    <div class="position-relative min-vh-100 w-100 d-flex align-items-center justify-content-center">
+      {% block content %}
+      {% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const backgroundColorOptions = ["1e88e5", "ffb300", "ff5722", "673ab7", "2196f3", "ff9800", "ffeb3b", "4caf50", "9c27b0", "e91e63"];
+      const eyesOptions = ["bulging", "dizzy","eva","frame1","frame2","glow","happy","hearts","robocop","round","roundFrame01","roundFrame02","sensor","shade01"];
+      const mouthOptions = ["bite","diagram","grill01","grill02","grill03","smile01","smile02","square01","square02"];
+      
+      const numRows = 3;
+      const avatarSize = window.innerWidth / 5;
+      const avatarPosition = 1/numRows*100;
+
+      function randomizeAvatar() {
+        const backgroundColor = backgroundColorOptions[Math.floor(Math.random() * backgroundColorOptions.length)];
+        const eyes = eyesOptions[Math.floor(Math.random() * eyesOptions.length)];
+        const mouth = mouthOptions[Math.floor(Math.random() * mouthOptions.length)];
+        return `https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=${eyes}&mouth=${mouth}&backgroundColor=${backgroundColor}`;
+      }
+
+
+      function createAvatar() {
+        const img = document.createElement('img');
+        img.src = randomizeAvatar();
+        img.className = 'avatar-small';
+        img.style.width = `${avatarSize}px`;
+        img.style.height = `${avatarSize}px`;
+        img.style.zIndex = '1';
+        img.style.cursor = 'pointer';
+        img.classList.add('p-2');
+        return img;
+      }
+
+      function createAvatarWrapper() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'wrapper';
+        wrapper.style.position = 'absolute';
+        wrapper.style.width = '100%';
+        wrapper.style.height = `${100/numRows}%`;
+        return wrapper;
+      }
+
+    
+      gsap.set(".avatar-small", {
+        x: (i) => (i * avatarSize) - 300 // Start 200px before the screen
+      });
+
+      gsap.to(".avatar-small", {
+        duration: 30,
+        ease: "none",
+        x: `+=${window.innerWidth + 300}`, // Move by screen width plus 300px
+        modifiers: {
+            x: gsap.utils.unitize(x => {
+              const totalDistance = window.innerWidth + 300;
+              return (parseFloat(x) + 300) % totalDistance - 300; // Adjust the position to start 300px before screen
+            })
+        },
+        repeat: -1
+      });
+
+      // Update animation on window resize
+      window.addEventListener('resize', () => {
+        gsap.to(".avatar-small", {
+          duration: 30,
+          ease: "none",
+          x: `+=${window.innerWidth + 300}`,
+          modifiers: {
+              x: gsap.utils.unitize(x => {
+                const totalDistance = window.innerWidth + 300;
+                return (parseFloat(x) + 300) % totalDistance - 300;
+              })
+          },
+          repeat: -1
+        });
+      });
+
+      // Function to initialize avatars and animation
+      function initializeAvatars() {
+        // Clear existing avatars
+        const container = document.querySelector('#background-avatars');
+        container.innerHTML = '';
+
+        for (let i = 0; i < numRows; i++) {
+            const wrapper = createAvatarWrapper();
+            wrapper.style.top = `${(i * 100)/numRows}%`;
+            container.appendChild(wrapper);
+
+            // Create new avatars
+            const numAvatars = Math.ceil(window.innerWidth / avatarSize) + 1; // Add extra avatars for smooth transition
+            for (let j = 0; j < numAvatars; j++) {
+              const img = document.createElement('img');
+              img.src = randomizeAvatar();
+              img.className = 'avatar-small';
+              img.style.width = `${avatarSize}px`;
+              img.style.height = `${avatarSize}px`;
+              img.style.zIndex = '1';
+              img.style.cursor = 'pointer';
+              img.classList.add('p-2');
+              if (i === 1) { // Second row
+                img.classList.add('reverse-row');
+              }
+              wrapper.appendChild(img);
+            }
+        }
+
+        
+        // Set initial positions
+        gsap.set(".avatar-small", {
+          x: (i) => (i * avatarSize) - 300
+        });
+
+        // Start animation
+        gsap.to(".avatar-small", {
+          duration: 40,
+          ease: "none",
+          x: `+=${window.innerWidth + 300}`,
+          modifiers: {
+              x: gsap.utils.unitize(x => {
+                const totalDistance = window.innerWidth + 300;
+                return (parseFloat(x) + 300) % totalDistance - 300;
+              })
+          },
+          repeat: -1
+        });
+
+        // Start animation
+        gsap.to(".reverse-row", {
+          duration: 60,
+          ease: "none",
+          x: `+=${window.innerWidth + 300}`,
+          modifiers: {
+              x: gsap.utils.unitize(x => {
+                const totalDistance = window.innerWidth + 300;
+                return (parseFloat(x) + 300) % totalDistance - 300;
+              })
+          },
+          repeat: -1
+        });
+      }
+
+      // Initialize when DOM is loaded
+      document.addEventListener('DOMContentLoaded', initializeAvatars);
+
+      // Reinitialize on window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(initializeAvatars, 250);
+      });
+    </script>
+  </body>
+</html>
+

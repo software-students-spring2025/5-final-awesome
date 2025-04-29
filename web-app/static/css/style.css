@@ -1,0 +1,110 @@
+.avatar:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.avatar-row {
+  position: absolute;
+  width: 100%;
+  height: 33.33%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* .avatar-row:nth-child(even) {
+  animation-direction: reverse;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+} */
+
+.background-avatars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  background: rgb(232, 244, 255);
+}
+
+.avatar-small {
+  position: absolute;
+  opacity: 0.5;
+  will-change: transform;
+}
+
+.avatar-small:hover {
+  transform: scale(1.1);
+  opacity: 0.5;
+}
+
+.avatar-placeholder {
+  background: transparent;
+  transition: background-color 0.3s ease;
+}
+
+body {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.poll-container {
+  background-color: white;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.poll-title {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.option-input, .form-option {
+  transition: transform 0.2s ease;
+}
+
+.option-input:hover,
+.form-option:hover {
+  transform: translateX(6px);
+}
+
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.7em;
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+.wrapper {
+  overflow: hidden;}
+

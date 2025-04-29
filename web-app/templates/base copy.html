@@ -1,0 +1,102 @@
+<!-- <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Poll App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  </head>
+  <body class="bg-light">
+    <div class="position-fixed top-0 start-0 w-100 h-100 bg-gradient" style="z-index: -1; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);" id="background-container">
+      <div class="background-avatars" id="background-avatars"></div>
+    </div>
+    <div class="position-relative min-vh-100 w-100 d-flex align-items-center justify-content-center">
+      {% block content %}
+      {% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const backgroundColorOptions = ["1e88e5", "ffb300", "ff5722", "673ab7", "2196f3", "ff9800", "ffeb3b", "4caf50", "9c27b0", "e91e63"];
+      const eyesOptions = ["bulging", "dizzy","eva","frame1","frame2","glow","happy","hearts","robocop","round","roundFrame01","roundFrame02","sensor","shade01"];
+      const mouthOptions = ["bite","diagram","grill01","grill02","grill03","smile01","smile02","square01","square02"];
+      
+      const numRows = 3;
+      const avatarSize = window.innerWidth / 5;
+      const avatarPosition = 1/numRows*100;
+
+      function randomizeAvatar() {
+        const backgroundColor = backgroundColorOptions[Math.floor(Math.random() * backgroundColorOptions.length)];
+        const eyes = eyesOptions[Math.floor(Math.random() * eyesOptions.length)];
+        const mouth = mouthOptions[Math.floor(Math.random() * mouthOptions.length)];
+        return `https://api.dicebear.com/9.x/bottts-neutral/svg?size=200&radius=10&eyes=${eyes}&mouth=${mouth}&backgroundColor=${backgroundColor}`;
+      }
+
+
+      function createAvatar() {
+        const img = document.createElement('img');
+        img.src = randomizeAvatar();
+        img.className = 'avatar-small';
+        img.style.width = `${avatarSize}px`;
+        img.style.height = `${avatarSize}px`;
+        img.style.zIndex = '1';
+        img.style.cursor = 'pointer';
+        img.classList.add('p-2');
+
+        // // Add event listener for when avatar moves out of screen
+        // img.addEventListener('animationend', () => {
+        //   // Reset the avatar's position to start from the left again
+        //   img.src = randomizeAvatar();
+        // });
+        
+        return img;
+      }
+
+      function createAvatarRow(rowIndex, numAvatars) {
+        const row = document.createElement('div');
+        row.className = 'avatar-row';
+        row.style.top = `${(rowIndex * avatarPosition)}%`;
+        row.classList.add('py-5');
+        row.classList.add('bg-primary');
+        row.style.zIndex = '-2';
+        row.style.overflow = 'hidden';
+
+        // Create avatars with staggered positions
+        for (let i = 0; i < numAvatars; i++) {
+          const avatar = createAvatar();
+          // Position avatars at different starting points
+          avatar.style.left = `${i * (window.innerWidth / numAvatars)}px`;
+          row.appendChild(avatar);
+        }
+
+        return row;
+      }
+
+      function initializeBackground() {
+        const container = document.getElementById('background-avatars');
+        const avatarsPerRow = Math.ceil(window.innerWidth / (avatarSize + 20));
+
+        for (let i = 0; i < numRows; i++) {
+          const row = createAvatarRow(i, avatarsPerRow);
+          container.appendChild(row);
+        }
+      }
+
+      // Initialize on load
+      window.addEventListener('load', initializeBackground);
+
+      // Reinitialize on resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          const container = document.getElementById('background-avatars');
+          container.innerHTML = '';
+          initializeBackground();
+        }, 250);
+      });
+    </script>
+  </body>
+</html>
+ -->
