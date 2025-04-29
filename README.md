@@ -3,7 +3,7 @@
 
 # Easy Anonymous Polls
 
-This project allows users to create polls, which generates a poll code that can be used to vote on polls. Log in and sign up features are optional for users who wants to keep track of their polls.\
+This project allows users to create polls and vote on those polls. A poll code will be automatically generated once a poll is created. Guests can use the poll code to enter the voting page and vote. A result page is also included to show the result of the poll. Log in and sign up features are optional for users who wants to keep track of their polls.\
 Production server with gunicorn is on [http://45.55.55.183:8000/](http://45.55.55.183:8000/).
 
 ## Team members
@@ -32,7 +32,7 @@ The web app now runs on [http://127.0.0.1:8000](http://127.0.0.1:8000)
 ## Environment Variables Setup
 
 Look at [web-app/example.env](web-app/example.env)\
-Simply rename the file to ```.env``` and change the value of ```SECRET_KEY``` as you like
+Simply rename the file to `.env` and change the value of `SECRET_KEY` as you like
 
 ## Install and Run Formatter
 
